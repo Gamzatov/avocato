@@ -26,7 +26,7 @@ class MenuController extends Controller
             Category::query()
                 ->where('is_active', true)
                 ->orderBy('sort_order')
-                ->get(['id', 'name', 'slug', 'icon'])
+                ->get(['id', 'name', 'slug', 'icon', 'image'])
         );
     }
 
@@ -56,6 +56,9 @@ class MenuController extends Controller
                 'name' => $category->name,
                 'slug' => $category->slug,
                 'icon' => $category->icon,
+                'image' => $category->image
+                    ? asset('storage/'.$category->image)
+                    : null,
                 'products' => $category->products->map(function ($product) {
                     $city = $product->cities->first();
 

@@ -136,6 +136,7 @@
         </div>
 
         <div class="products-grid" id="productsGrid"></div>
+        <div class="product-pagination" id="productPagination"></div>
       </div>
     </section>
 

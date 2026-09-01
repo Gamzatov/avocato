@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\StoreCategoryRequest;
 use App\Http\Requests\Admin\UpdateCategoryRequest;
 use App\Models\Category;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -35,6 +36,11 @@ class CategoryController extends Controller
     public function store(StoreCategoryRequest $request): RedirectResponse
     {
         $data = $request->validated();
+
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('categories', 'public');
+        }
+
         $data['slug'] = $this->generateUniqueSlug($data['name']);
         $data['is_active'] = $request->boolean('is_active');
         $data['sort_order'] = $data['sort_order'] ?? 0;
@@ -56,6 +62,15 @@ class CategoryController extends Controller
     public function update(UpdateCategoryRequest $request, Category $category): RedirectResponse
     {
         $data = $request->validated();
+
+        if ($request->hasFile('image')) {
+            if ($category->image) {
+                Storage::disk('public')->delete($category->image);
+            }
+
+            $data['image'] = $request->file('image')->store('categories', 'public');
+        }
+
         $data['is_active'] = $request->boolean('is_active');
         $data['sort_order'] = $data['sort_order'] ?? 0;
 
@@ -72,6 +87,10 @@ class CategoryController extends Controller
             return redirect()
                 ->route('admin.categories.index')
                 ->withErrors('Неможливо видалити фільтр, у якому є продукти. Спочатку перенесіть або видаліть продукти.');
+        }
+
+        if ($category->image) {
+            Storage::disk('public')->delete($category->image);
         }
 
         $category->delete();

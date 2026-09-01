@@ -2,8 +2,10 @@ let currentCitySlug = localStorage.getItem('avocatoCity');
 let menuData = null;
 let activeCategoryId = 'all';
 let productSearchTerm = '';
+let currentProductsPage = 1;
 let createdOrderId = null;
 let cart = JSON.parse(localStorage.getItem('avocatoCart') || '[]');
+const productsPerPage = 10;
 
 const $ = id => document.getElementById(id);
 const cityModal = $('cityModal');
@@ -14,6 +16,7 @@ const heroPhone = $('heroPhone');
 const promoPhone = $('promoPhone');
 const categoryGrid = $('categoryGrid');
 const productsGrid = $('productsGrid');
+const productPagination = $('productPagination');
 const categoryTitle = $('categoryTitle');
 const resultCount = $('resultCount');
 const productSearch = $('productSearch');
@@ -107,6 +110,7 @@ async function loadMenu(citySlug, options = {}) {
   }
 
   renderCategories();
+  currentProductsPage = 1;
   renderProducts();
 
   if (options.clearCartBeforeRender) {
@@ -125,6 +129,7 @@ function renderCategories() {
       id: 'all',
       name: 'Все',
       icon: '🍽️',
+      image: null,
       products: allProducts(),
     },
     ...menuData.categories,
@@ -132,7 +137,11 @@ function renderCategories() {
 
   categoryGrid.innerHTML = categories.map(category => `
     <button class="category-card ${category.id === activeCategoryId ? 'active' : ''}" data-category-id="${category.id}">
-      <span class="category-icon">${category.icon || '🍣'}</span>
+      <span class="category-icon">
+        ${category.image
+          ? `<img src="${category.image}" alt="">`
+          : (category.icon || '🍣')}
+      </span>
       <span>
         <span class="category-name">${category.name}</span>
         <small>${category.products.length} позицій</small>
@@ -145,6 +154,7 @@ function renderCategories() {
       activeCategoryId = button.dataset.categoryId === 'all'
         ? 'all'
         : Number(button.dataset.categoryId);
+      currentProductsPage = 1;
       renderCategories();
       renderProducts();
       document.querySelector('.products-section').scrollIntoView({behavior:'smooth'});
@@ -166,6 +176,11 @@ function getCategory() {
 function renderProducts() {
   const category = getCategory();
   const products = filterProducts(category?.products || []);
+  const totalPages = Math.max(1, Math.ceil(products.length / productsPerPage));
+  currentProductsPage = Math.min(currentProductsPage, totalPages);
+  const pageStart = (currentProductsPage - 1) * productsPerPage;
+  const visibleProducts = products.slice(pageStart, pageStart + productsPerPage);
+
   categoryTitle.textContent = category?.name || 'Меню';
   resultCount.textContent = productSearchTerm
     ? `${products.length} знайдено`
@@ -178,10 +193,11 @@ function renderProducts() {
         <p>Спробуйте змінити запит або оберіть іншу категорію.</p>
       </div>
     `;
+    renderProductPagination(products.length);
     return;
   }
 
-  productsGrid.innerHTML = products.map(product => `
+  productsGrid.innerHTML = visibleProducts.map(product => `
     <article class="product-card">
       <div class="product-photo">
         ${product.image
@@ -209,6 +225,31 @@ function renderProducts() {
 
   productsGrid.querySelectorAll('.order-btn').forEach(button => {
     button.addEventListener('click', () => addToCart(Number(button.dataset.productId)));
+  });
+
+  renderProductPagination(products.length);
+}
+
+function renderProductPagination(productsCount) {
+  const totalPages = Math.ceil(productsCount / productsPerPage);
+
+  if (totalPages <= 1) {
+    productPagination.replaceChildren();
+    return;
+  }
+
+  productPagination.innerHTML = `
+    <button class="pagination-btn" type="button" data-page-action="prev" ${currentProductsPage === 1 ? 'disabled' : ''}>Назад</button>
+    <span class="pagination-status">${currentProductsPage} / ${totalPages}</span>
+    <button class="pagination-btn" type="button" data-page-action="next" ${currentProductsPage === totalPages ? 'disabled' : ''}>Далі</button>
+  `;
+
+  productPagination.querySelectorAll('[data-page-action]').forEach(button => {
+    button.addEventListener('click', () => {
+      currentProductsPage += button.dataset.pageAction === 'next' ? 1 : -1;
+      renderProducts();
+      document.querySelector('.products-section').scrollIntoView({behavior: 'smooth'});
+    });
   });
 }
 
@@ -460,6 +501,7 @@ checkoutButton.addEventListener('click', showCheckoutForm);
 checkoutForm.addEventListener('submit', submitOrder);
 productSearch.addEventListener('input', () => {
   productSearchTerm = productSearch.value;
+  currentProductsPage = 1;
   renderProducts();
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCart(); });

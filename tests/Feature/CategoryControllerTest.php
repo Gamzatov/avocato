@@ -6,6 +6,8 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class CategoryControllerTest extends TestCase
@@ -14,11 +16,13 @@ class CategoryControllerTest extends TestCase
 
     public function test_authenticated_admin_can_create_filter(): void
     {
+        Storage::fake('public');
+
         $response = $this
             ->actingAs(User::factory()->create())
             ->post(route('admin.categories.store'), [
                 'name' => 'Запечені роли',
-                'icon' => '🔥',
+                'image' => UploadedFile::fake()->image('baked-rolls.jpg'),
                 'sort_order' => 11,
                 'is_active' => '1',
             ]);
@@ -30,18 +34,24 @@ class CategoryControllerTest extends TestCase
         $this->assertDatabaseHas('categories', [
             'name' => 'Запечені роли',
             'slug' => 'zapeceni-roli',
-            'icon' => '🔥',
             'sort_order' => 11,
             'is_active' => true,
         ]);
+
+        $category = Category::query()->where('slug', 'zapeceni-roli')->firstOrFail();
+
+        $this->assertNotNull($category->image);
+        Storage::disk('public')->assertExists($category->image);
     }
 
     public function test_authenticated_admin_can_update_filter(): void
     {
+        Storage::fake('public');
+
         $category = Category::create([
             'name' => 'Роли',
             'slug' => 'rolls',
-            'icon' => '🍣',
+            'image' => UploadedFile::fake()->image('rolls.jpg')->store('categories', 'public'),
             'sort_order' => 1,
             'is_active' => true,
         ]);
@@ -50,7 +60,7 @@ class CategoryControllerTest extends TestCase
             ->actingAs(User::factory()->create())
             ->put(route('admin.categories.update', $category), [
                 'name' => 'Авторські роли',
-                'icon' => '⭐',
+                'image' => UploadedFile::fake()->image('signature-rolls.jpg'),
                 'sort_order' => 2,
                 'is_active' => '0',
             ]);
@@ -63,10 +73,14 @@ class CategoryControllerTest extends TestCase
             'id' => $category->id,
             'name' => 'Авторські роли',
             'slug' => 'rolls',
-            'icon' => '⭐',
             'sort_order' => 2,
             'is_active' => false,
         ]);
+
+        $category->refresh();
+
+        $this->assertNotNull($category->image);
+        Storage::disk('public')->assertExists($category->image);
     }
 
     public function test_does_not_delete_filter_that_has_products(): void

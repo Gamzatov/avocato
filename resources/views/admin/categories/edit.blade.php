@@ -8,7 +8,7 @@
     </div>
 </div>
 
-<form method="POST" action="{{ route('admin.categories.update', $category) }}">
+<form method="POST" action="{{ route('admin.categories.update', $category) }}" enctype="multipart/form-data">
     @csrf
     @method('PUT')
     @include('admin.categories._form')

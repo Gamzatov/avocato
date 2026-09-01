@@ -13,7 +13,7 @@
     <table>
         <thead>
         <tr>
-            <th>Іконка</th>
+            <th>Картинка</th>
             <th>Назва</th>
             <th>Сортування</th>
             <th>Продуктів</th>
@@ -24,7 +24,13 @@
         <tbody>
         @forelse($categories as $category)
             <tr>
-                <td style="font-size:28px;">{{ $category->icon ?: '—' }}</td>
+                <td>
+                    @if($category->image)
+                        <img class="thumb" src="{{ asset('storage/'.$category->image) }}" alt="{{ $category->name }}">
+                    @else
+                        <span style="font-size:28px;">{{ $category->icon ?: '—' }}</span>
+                    @endif
+                </td>
                 <td><strong>{{ $category->name }}</strong></td>
                 <td>{{ $category->sort_order }}</td>
                 <td>{{ $category->products_count }}</td>

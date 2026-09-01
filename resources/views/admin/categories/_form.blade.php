@@ -10,8 +10,13 @@
 
         <div>
             <div class="field">
-                <label>Іконка</label>
-                <input name="icon" value="{{ old('icon', $category->icon) }}" placeholder="наприклад: 🍣">
+                <label>Картинка фільтра</label>
+                <input type="file" name="image" accept="image/*">
+                @if($category->image)
+                    <div style="margin-top:10px;">
+                        <img class="thumb" src="{{ asset('storage/'.$category->image) }}" alt="{{ $category->name }}">
+                    </div>
+                @endif
             </div>
 
             <div class="field">
