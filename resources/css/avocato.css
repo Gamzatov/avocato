@@ -653,12 +653,28 @@ h3 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 18px
+  margin-top: 18px;
+  min-height: 30px
 }
 
 .weight {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: fit-content;
+  border: 1px solid rgba(185, 220, 61, .25);
+  border-radius: 999px;
+  background: rgba(185, 220, 61, .07);
+  color: #b9b9b2;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 7px 10px
+}
+
+.weight span {
+  color: var(--green);
   font-size: 13px;
-  color: #777
+  line-height: 1
 }
 
 .product-actions {
@@ -858,7 +874,50 @@ h3 {
   }
 
   .products-grid {
-    grid-template-columns: 1fr
+    grid-template-columns: 1fr;
+    gap: 14px
+  }
+
+  .product-card {
+    border-radius: 20px
+  }
+
+  .product-photo {
+    aspect-ratio: 1.55/1
+  }
+
+  .product-body {
+    padding: 16px
+  }
+
+  .product-top {
+    gap: 10px
+  }
+
+  .product-top h3 {
+    font-size: 22px
+  }
+
+  .price {
+    font-size: 18px
+  }
+
+  .ingredients {
+    min-height: 42px;
+    font-size: 13px
+  }
+
+  .product-meta {
+    margin-top: 12px
+  }
+
+  .product-actions {
+    margin-top: 14px
+  }
+
+  .product-actions .btn {
+    min-height: 42px;
+    font-size: 12px
   }
 
   .promo-card {
