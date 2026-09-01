@@ -12,6 +12,7 @@ const cityModal = $('cityModal');
 const selectedCity = $('selectedCity');
 const heroCity = $('heroCity');
 const headerPhones = $('headerPhones');
+const headerPhone = $('headerPhone');
 const heroPhone = $('heroPhone');
 const promoPhone = $('promoPhone');
 const categoryGrid = $('categoryGrid');
@@ -55,6 +56,17 @@ function cityPhones() {
 }
 
 function renderHeaderPhones() {
+  if (!headerPhones) {
+    const primaryPhone = cityPhones()[0];
+
+    if (headerPhone) {
+      headerPhone.textContent = primaryPhone || '—';
+      headerPhone.href = tel(primaryPhone);
+    }
+
+    return;
+  }
+
   headerPhones.replaceChildren();
 
   const phones = cityPhones();
@@ -231,6 +243,10 @@ function renderProducts() {
 }
 
 function renderProductPagination(productsCount) {
+  if (!productPagination) {
+    return;
+  }
+
   const totalPages = Math.ceil(productsCount / productsPerPage);
 
   if (totalPages <= 1) {
