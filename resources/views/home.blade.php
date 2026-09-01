@@ -215,16 +215,6 @@
             <input id="checkoutPhone" name="phone" autocomplete="tel" required>
           </div>
 
-          <div class="checkout-field">
-            <label for="checkoutAddress">Адреса доставки</label>
-            <input id="checkoutAddress" name="address" autocomplete="street-address">
-          </div>
-
-          <div class="checkout-field">
-            <label for="checkoutComment">Коментар</label>
-            <textarea id="checkoutComment" name="comment" rows="3"></textarea>
-          </div>
-
           <button class="btn btn-green cart-checkout" type="submit">
             Створити замовлення
           </button>

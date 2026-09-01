@@ -439,8 +439,6 @@ async function submitOrder(event) {
         customer: {
           name: formData.get('name'),
           phone: formData.get('phone'),
-          address: formData.get('address'),
-          comment: formData.get('comment'),
         },
         items: cart.map(item => ({
           product_id: item.productId,

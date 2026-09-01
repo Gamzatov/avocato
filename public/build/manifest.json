@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-B8GCBUhI.css",
+    "file": "assets/app-STUibbAS.css",
     "name": "app",
     "names": [
       "app.css"
@@ -24,7 +24,7 @@
     "isEntry": true
   },
   "resources/js/avocato.js": {
-    "file": "assets/avocato-iz1wl1cv.js",
+    "file": "assets/avocato-D5EwXIjq.js",
     "name": "avocato",
     "src": "resources/js/avocato.js",
     "isEntry": true
