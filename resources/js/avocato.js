@@ -32,6 +32,7 @@ const cartTotal = $('cartTotal');
 const cartCity = $('cartCity');
 const checkoutButton = $('checkoutButton');
 const checkoutForm = $('checkoutForm');
+const checkoutPhone = $('checkoutPhone');
 const checkoutSuccess = $('checkoutSuccess');
 const checkoutSuccessTitle = $('checkoutSuccessTitle');
 const checkoutCallButtons = $('checkoutCallButtons');
@@ -48,6 +49,54 @@ function money(value) {
 
 function tel(phone) {
   return `tel:${String(phone || '').replace(/[^\d+]/g, '')}`;
+}
+
+function phoneDigits(value) {
+  let digits = String(value || '').replace(/\D/g, '');
+
+  if (digits.startsWith('380')) {
+    digits = digits.slice(3);
+  } else if (digits.startsWith('38')) {
+    digits = digits.slice(2);
+  }
+
+  if (digits.startsWith('0')) {
+    digits = digits.slice(1);
+  }
+
+  return digits.slice(0, 9);
+}
+
+function formatUkrainianPhone(value) {
+  const digits = phoneDigits(value);
+  const operator = digits.slice(0, 2);
+  const first = digits.slice(2, 5);
+  const second = digits.slice(5, 7);
+  const third = digits.slice(7, 9);
+
+  let phone = '+38';
+
+  if (operator) {
+    phone += ` (0${operator}`;
+  }
+
+  if (operator.length === 2) {
+    phone += ')';
+  }
+
+  if (first) {
+    phone += ` ${first}`;
+  }
+
+  if (second) {
+    phone += `-${second}`;
+  }
+
+  if (third) {
+    phone += `-${third}`;
+  }
+
+  return phone;
 }
 
 function cityPhones() {
@@ -439,6 +488,12 @@ async function submitOrder(event) {
     return;
   }
 
+  if (phoneDigits(checkoutPhone.value).length !== 9) {
+    notify('Введіть повний український номер телефону.');
+    checkoutPhone.focus();
+    return;
+  }
+
   const formData = new FormData(checkoutForm);
   const submitButton = checkoutForm.querySelector('button[type="submit"]');
   submitButton.disabled = true;
@@ -513,6 +568,9 @@ $('cartBackdrop').addEventListener('click', closeCart);
 $('cartGoMenu').addEventListener('click', () => { closeCart(); $('menu').scrollIntoView({behavior:'smooth'}); });
 checkoutButton.addEventListener('click', showCheckoutForm);
 checkoutForm.addEventListener('submit', submitOrder);
+checkoutPhone.addEventListener('input', () => {
+  checkoutPhone.value = formatUkrainianPhone(checkoutPhone.value);
+});
 productSearch.addEventListener('input', () => {
   productSearchTerm = productSearch.value;
   currentProductsPage = 1;

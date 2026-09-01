@@ -212,7 +212,14 @@
 
           <div class="checkout-field">
             <label for="checkoutPhone">Телефон *</label>
-            <input id="checkoutPhone" name="phone" autocomplete="tel" required>
+            <input id="checkoutPhone"
+                   name="phone"
+                   type="tel"
+                   inputmode="tel"
+                   autocomplete="tel"
+                   placeholder="+38 (0__) ___-__-__"
+                   maxlength="19"
+                   required>
           </div>
 
           <button class="btn btn-green cart-checkout" type="submit">
