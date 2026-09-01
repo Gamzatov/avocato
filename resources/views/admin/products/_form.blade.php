@@ -72,7 +72,7 @@
                     <strong>{{ $city->name }}</strong>
 
                     <div class="field" style="margin-top:12px;">
-                        <label>Ціна, ₴</label>
+                        <label>Ціна, грн</label>
                         <input type="number"
                                step="0.01"
                                min="0"

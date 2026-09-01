@@ -35,7 +35,7 @@
                     <span class="status-pill">{{ $order->status->label() }}</span>
                 </td>
                 <td>{{ $order->items_count }}</td>
-                <td><strong>{{ number_format((float) $order->total, 0, '.', ' ') }} ₴</strong></td>
+                <td><strong>{{ number_format((float) $order->total, 0, '.', ' ') }} грн</strong></td>
                 <td>
                     {{ $order->created_at?->format('d.m.Y H:i') }}
                 </td>

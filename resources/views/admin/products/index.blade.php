@@ -40,7 +40,7 @@
                     @foreach($product->cities as $city)
                         <div>
                             {{ $city->name }}:
-                            <strong>{{ number_format($city->pivot->price, 0, '.', ' ') }} ₴</strong>
+                            <strong>{{ number_format($city->pivot->price, 0, '.', ' ') }} грн</strong>
                             @if(!$city->pivot->is_active)
                                 <span class="muted">(вимк.)</span>
                             @endif

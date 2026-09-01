@@ -26,7 +26,7 @@
 
     <div class="summary-box">
         <span class="muted">Разом</span>
-        <strong>{{ number_format((float) $order->total, 0, '.', ' ') }} ₴</strong>
+        <strong>{{ number_format((float) $order->total, 0, '.', ' ') }} грн</strong>
         <div class="muted">{{ $order->items->sum('quantity') }} позицій</div>
     </div>
 </div>
@@ -80,8 +80,8 @@
                     <div class="muted">{{ $item->product_slug }}</div>
                 </td>
                 <td>{{ $item->quantity }}</td>
-                <td>{{ number_format((float) $item->unit_price, 0, '.', ' ') }} ₴</td>
-                <td><strong>{{ number_format((float) $item->line_total, 0, '.', ' ') }} ₴</strong></td>
+                <td>{{ number_format((float) $item->unit_price, 0, '.', ' ') }} грн</td>
+                <td><strong>{{ number_format((float) $item->line_total, 0, '.', ' ') }} грн</strong></td>
             </tr>
         @endforeach
         </tbody>
