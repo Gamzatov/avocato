@@ -283,7 +283,7 @@ function renderProducts() {
       <article class="product-card ${isAvailable ? '' : 'is-unavailable'}">
         <div class="product-photo">
           ${product.image
-            ? `<img src="${product.image}" alt="${product.name}" style="width:100%;height:100%;object-fit:cover">`
+            ? `<img src="${product.image}" alt="${product.name}">`
             : '<span style="font-size:96px">🍣</span>'}
           ${badgeLabel ? `<span class="product-badge product-badge--${product.badge || 'default'}">${badgeLabel}</span>` : ''}
         </div>
