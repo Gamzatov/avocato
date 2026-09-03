@@ -271,14 +271,16 @@ function renderProducts() {
           <div class="price">${money(product.price)}</div>
         </div>
         <p class="ingredients">${product.description || ''}</p>
-        <div class="product-meta">
-          ${product.weight
-            ? `<span class="weight"><span aria-hidden="true">⚖</span> Вага: ${product.weight}</span>`
-            : ''}
-        </div>
-        <div class="product-actions">
-          <button class="btn btn-green order-btn" data-product-id="${product.id}">У кошик</button>
-          <a class="btn btn-outline" href="${tel(cityPhones()[0])}">Зателефонувати</a>
+        <div class="product-card__footer">
+          <div class="product-meta">
+            ${product.weight
+              ? `<span class="weight"><span aria-hidden="true">⚖</span> Вага: ${product.weight}</span>`
+              : ''}
+          </div>
+          <div class="product-actions">
+            <button class="btn btn-green order-btn" data-product-id="${product.id}">У кошик</button>
+            <a class="btn btn-outline" href="${tel(cityPhones()[0])}">Зателефонувати</a>
+          </div>
         </div>
       </div>
     </article>
