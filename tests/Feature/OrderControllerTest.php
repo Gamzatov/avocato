@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\City;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\ProductOption;
 use App\Models\User;
 use App\OrderStatus;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
@@ -78,6 +79,43 @@ class OrderControllerTest extends TestCase
 
         $this->assertDatabaseCount('orders', 0);
         $this->assertDatabaseCount('order_items', 0);
+    }
+
+    public function test_valid_payload_creates_order_with_product_option(): void
+    {
+        [$city, $product] = $this->createAvailableProduct();
+        $option = ProductOption::create([
+            'product_id' => $product->id,
+            'name' => 'ВУГОР',
+            'price' => 310,
+            'weight' => '270г',
+            'sort_order' => 1,
+            'is_active' => true,
+        ]);
+
+        $response = $this->postJson('/api/orders', [
+            'city_slug' => $city->slug,
+            'customer' => [
+                'name' => 'Олена',
+                'phone' => '+380730054050',
+            ],
+            'items' => [
+                ['product_id' => $product->id, 'product_option_id' => $option->id, 'qty' => 2],
+            ],
+        ]);
+
+        $response
+            ->assertCreated()
+            ->assertJsonPath('order.total', '620.00');
+
+        $this->assertDatabaseHas('order_items', [
+            'product_id' => $product->id,
+            'product_option_id' => $option->id,
+            'product_option_name' => 'ВУГОР',
+            'unit_price' => '310.00',
+            'quantity' => 2,
+            'line_total' => '620.00',
+        ]);
     }
 
     public function test_authenticated_admin_can_update_order_status(): void

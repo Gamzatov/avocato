@@ -702,6 +702,25 @@ h3 {
   min-height: 64px
 }
 
+.product-option {
+  display: grid;
+  gap: 7px;
+  margin-top: 14px;
+  color: #b9b9b2;
+  font-size: 12px;
+  font-weight: 800
+}
+
+.product-option select {
+  width: 100%;
+  border: 1px solid #303030;
+  border-radius: 14px;
+  background: #0d0d0d;
+  color: #f7f7f2;
+  font-weight: 800;
+  padding: 12px 14px
+}
+
 .product-card__footer {
   margin-top: auto;
   padding-top: 18px
@@ -1155,6 +1174,13 @@ h3 {
 
 .cart-item__name {
   font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.cart-item__option {
+  color: var(--green);
+  font-size: 12px;
   font-weight: 800;
   margin-bottom: 4px;
 }

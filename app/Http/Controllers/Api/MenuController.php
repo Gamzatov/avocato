@@ -46,6 +46,9 @@ class MenuController extends Controller
                     ->with(['cities' => function ($cityQuery) use ($city) {
                         $cityQuery->where('cities.id', $city->id);
                     }])
+                    ->with(['options' => function ($optionQuery) {
+                        $optionQuery->where('is_active', true);
+                    }])
                     ->orderBy('sort_order');
             }])
             ->get();
@@ -72,6 +75,12 @@ class MenuController extends Controller
                             ? asset('storage/'.$product->image)
                             : null,
                         'price' => $city?->pivot?->price,
+                        'options' => $product->options->map(fn ($option): array => [
+                            'id' => $option->id,
+                            'name' => $option->name,
+                            'price' => $option->price,
+                            'weight' => $option->weight,
+                        ])->values(),
                     ];
                 })->values(),
             ];

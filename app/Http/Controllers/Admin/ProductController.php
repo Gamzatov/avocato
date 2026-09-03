@@ -9,6 +9,8 @@ use App\Models\Category;
 use App\Models\City;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -16,15 +18,32 @@ use Illuminate\View\View;
 
 class ProductController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        $search = trim((string) $request->query('search', ''));
+
         $products = Product::query()
-            ->with(['category', 'cities'])
+            ->with(['category', 'cities', 'options'])
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($query) use ($search) {
+                    $query
+                        ->where('name', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%")
+                        ->orWhere('weight', 'like', "%{$search}%")
+                        ->orWhereHas('category', function ($query) use ($search) {
+                            $query->where('name', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('options', function ($query) use ($search) {
+                            $query->where('name', 'like', "%{$search}%");
+                        });
+                });
+            })
             ->orderBy('sort_order')
             ->orderBy('name')
-            ->paginate(20);
+            ->paginate(20)
+            ->withQueryString();
 
-        return view('admin.products.index', compact('products'));
+        return view('admin.products.index', compact('products', 'search'));
     }
 
     public function create(): View
@@ -39,19 +58,21 @@ class ProductController extends Controller
     public function store(StoreProductRequest $request): RedirectResponse
     {
         $data = $request->validated();
+        $productData = Arr::except($data, ['cities', 'options']);
 
-        DB::transaction(function () use ($request, $data) {
+        DB::transaction(function () use ($request, $data, $productData) {
             if ($request->hasFile('image')) {
-                $data['image'] = $request->file('image')->store('products', 'public');
+                $productData['image'] = $request->file('image')->store('products', 'public');
             }
 
-            $data['slug'] = $this->generateUniqueSlug($data['name']);
-            $data['is_active'] = $request->boolean('is_active');
-            $data['sort_order'] = $data['sort_order'] ?? 0;
+            $productData['slug'] = $this->generateUniqueSlug($productData['name']);
+            $productData['is_active'] = $request->boolean('is_active');
+            $productData['sort_order'] = $productData['sort_order'] ?? 0;
 
-            $product = Product::create($data);
+            $product = Product::create($productData);
 
-            $this->syncCities($product, $request->input('cities', []));
+            $this->syncCities($product, $data['cities'] ?? []);
+            $this->syncOptions($product, $data['options'] ?? []);
         });
 
         return redirect()
@@ -61,7 +82,7 @@ class ProductController extends Controller
 
     public function edit(Product $product): View
     {
-        $product->load('cities');
+        $product->load(['cities', 'options']);
 
         return view('admin.products.edit', [
             'product' => $product,
@@ -73,22 +94,24 @@ class ProductController extends Controller
     public function update(UpdateProductRequest $request, Product $product): RedirectResponse
     {
         $data = $request->validated();
+        $productData = Arr::except($data, ['cities', 'options']);
 
-        DB::transaction(function () use ($request, $data, $product) {
+        DB::transaction(function () use ($request, $data, $product, $productData) {
             if ($request->hasFile('image')) {
                 if ($product->image) {
                     Storage::disk('public')->delete($product->image);
                 }
 
-                $data['image'] = $request->file('image')->store('products', 'public');
+                $productData['image'] = $request->file('image')->store('products', 'public');
             }
 
-            $data['is_active'] = $request->boolean('is_active');
-            $data['sort_order'] = $data['sort_order'] ?? 0;
+            $productData['is_active'] = $request->boolean('is_active');
+            $productData['sort_order'] = $productData['sort_order'] ?? 0;
 
-            $product->update($data);
+            $product->update($productData);
 
-            $this->syncCities($product, $request->input('cities', []));
+            $this->syncCities($product, $data['cities'] ?? []);
+            $this->syncOptions($product, $data['options'] ?? []);
         });
 
         return redirect()
@@ -127,6 +150,50 @@ class ProductController extends Controller
         }
 
         $product->cities()->sync($sync);
+    }
+
+    private function syncOptions(Product $product, array $options): void
+    {
+        $keptOptionIds = [];
+
+        foreach ($options as $index => $optionData) {
+            $optionId = isset($optionData['id']) ? (int) $optionData['id'] : null;
+            $name = trim((string) ($optionData['name'] ?? ''));
+            $price = $optionData['price'] ?? null;
+
+            if ($optionId && (bool) ($optionData['delete'] ?? false)) {
+                $product->options()->whereKey($optionId)->delete();
+
+                continue;
+            }
+
+            if ($name === '' || $price === null || $price === '') {
+                continue;
+            }
+
+            $option = $optionId
+                ? $product->options()->whereKey($optionId)->first()
+                : $product->options()->make();
+
+            if (! $option) {
+                continue;
+            }
+
+            $option->fill([
+                'name' => $name,
+                'price' => $price,
+                'weight' => $optionData['weight'] ?? null,
+                'sort_order' => $optionData['sort_order'] ?? $index,
+                'is_active' => (bool) ($optionData['is_active'] ?? false),
+            ]);
+
+            $option->save();
+            $keptOptionIds[] = $option->id;
+        }
+
+        $product->options()
+            ->when($keptOptionIds !== [], fn ($query) => $query->whereNotIn('id', $keptOptionIds))
+            ->delete();
     }
 
     private function generateUniqueSlug(string $name): string

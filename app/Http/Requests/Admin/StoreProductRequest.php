@@ -24,6 +24,12 @@ class StoreProductRequest extends FormRequest
             'cities' => ['required', 'array'],
             'cities.*.price' => ['nullable', 'numeric', 'min:0'],
             'cities.*.is_active' => ['nullable', 'boolean'],
+            'options' => ['nullable', 'array'],
+            'options.*.name' => ['nullable', 'string', 'max:255'],
+            'options.*.price' => ['nullable', 'numeric', 'min:0'],
+            'options.*.weight' => ['nullable', 'string', 'max:100'],
+            'options.*.sort_order' => ['nullable', 'integer', 'min:0'],
+            'options.*.is_active' => ['nullable', 'boolean'],
         ];
     }
 }

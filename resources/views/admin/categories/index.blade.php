@@ -60,7 +60,7 @@
     </table>
 
     <div style="margin-top:18px;">
-        {{ $categories->links() }}
+        {{ $categories->links('pagination::bootstrap-4') }}
     </div>
 </div>
 @endsection

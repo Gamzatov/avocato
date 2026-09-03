@@ -5,7 +5,8 @@ let productSearchTerm = '';
 let currentProductsPage = 1;
 let createdOrderId = null;
 let cart = JSON.parse(localStorage.getItem('avocatoCart') || '[]');
-const productsPerPage = 10;
+let selectedProductOptions = {};
+const productsPerPage = 9;
 
 const $ = id => document.getElementById(id);
 const cityModal = $('cityModal');
@@ -258,36 +259,61 @@ function renderProducts() {
     return;
   }
 
-  productsGrid.innerHTML = visibleProducts.map(product => `
-    <article class="product-card">
-      <div class="product-photo">
-        ${product.image
-          ? `<img src="${product.image}" alt="${product.name}" style="width:100%;height:100%;object-fit:cover">`
-          : '<span style="font-size:96px">🍣</span>'}
-      </div>
-      <div class="product-body">
-        <div class="product-top">
-          <h3>${product.name}</h3>
-          <div class="price">${money(product.price)}</div>
+  productsGrid.innerHTML = visibleProducts.map(product => {
+    const options = productOptions(product);
+    const option = selectedOption(product);
+    const weight = productWeight(product, option?.id);
+
+    return `
+      <article class="product-card">
+        <div class="product-photo">
+          ${product.image
+            ? `<img src="${product.image}" alt="${product.name}" style="width:100%;height:100%;object-fit:cover">`
+            : '<span style="font-size:96px">🍣</span>'}
         </div>
-        <p class="ingredients">${product.description || ''}</p>
-        <div class="product-card__footer">
-          <div class="product-meta">
-            ${product.weight
-              ? `<span class="weight"><span aria-hidden="true">⚖</span> Вага: ${product.weight}</span>`
-              : ''}
+        <div class="product-body">
+          <div class="product-top">
+            <h3>${product.name}</h3>
+            <div class="price">${money(productUnitPrice(product, option?.id))}</div>
           </div>
-          <div class="product-actions">
-            <button class="btn btn-green order-btn" data-product-id="${product.id}">У кошик</button>
-            <a class="btn btn-outline" href="${tel(cityPhones()[0])}">Зателефонувати</a>
+          <p class="ingredients">${product.description || ''}</p>
+          ${options.length
+            ? `<label class="product-option">
+                <span>Варіант</span>
+                <select class="product-option-select" data-product-id="${product.id}">
+                  ${options.map(item => `
+                    <option value="${item.id}" ${Number(item.id) === Number(option?.id) ? 'selected' : ''}>
+                      ${item.name} - ${money(item.price)}
+                    </option>
+                  `).join('')}
+                </select>
+              </label>`
+            : ''}
+          <div class="product-card__footer">
+            <div class="product-meta">
+              ${weight
+                ? `<span class="weight"><span aria-hidden="true">⚖</span> Вага: ${weight}</span>`
+                : ''}
+            </div>
+            <div class="product-actions">
+              <button class="btn btn-green order-btn" data-product-id="${product.id}" data-option-id="${option?.id || ''}">У кошик</button>
+              <a class="btn btn-outline" href="${tel(cityPhones()[0])}">Зателефонувати</a>
+            </div>
           </div>
         </div>
-      </div>
-    </article>
-  `).join('');
+      </article>
+    `;
+  }).join('');
+
+  productsGrid.querySelectorAll('.product-option-select').forEach(select => {
+    select.addEventListener('change', () => {
+      selectedProductOptions[Number(select.dataset.productId)] = Number(select.value);
+      renderProducts();
+    });
+  });
 
   productsGrid.querySelectorAll('.order-btn').forEach(button => {
-    button.addEventListener('click', () => addToCart(Number(button.dataset.productId)));
+    button.addEventListener('click', () => addToCart(Number(button.dataset.productId), Number(button.dataset.optionId) || null));
   });
 
   renderProductPagination(products.length);
@@ -342,31 +368,63 @@ function getProduct(id) {
   return allProducts().find(p => p.id === Number(id));
 }
 
+function productOptions(product) {
+  return Array.isArray(product.options) ? product.options : [];
+}
+
+function selectedOption(product) {
+  const options = productOptions(product);
+  if (!options.length) return null;
+
+  const selectedOptionId = selectedProductOptions[product.id] || options[0].id;
+  return options.find(option => Number(option.id) === Number(selectedOptionId)) || options[0];
+}
+
+function productUnitPrice(product, optionId = null) {
+  const option = optionId
+    ? productOptions(product).find(item => Number(item.id) === Number(optionId))
+    : selectedOption(product);
+
+  return Number(option?.price ?? product.price);
+}
+
+function productWeight(product, optionId = null) {
+  const option = optionId
+    ? productOptions(product).find(item => Number(item.id) === Number(optionId))
+    : selectedOption(product);
+
+  return option?.weight || product.weight;
+}
+
 function saveCart() {
   localStorage.setItem('avocatoCart', JSON.stringify(cart));
 }
 
-function addToCart(productId) {
+function addToCart(productId, optionId = null) {
   const product = getProduct(productId);
   if (!product) return;
   hideCheckoutSuccess();
-  const item = cart.find(i => i.productId === productId);
-  item ? item.qty++ : cart.push({productId, qty:1});
+  const option = optionId
+    ? productOptions(product).find(item => Number(item.id) === Number(optionId))
+    : null;
+  const resolvedOptionId = option?.id || null;
+  const item = cart.find(i => i.productId === productId && (i.optionId || null) === resolvedOptionId);
+  item ? item.qty++ : cart.push({productId, optionId: resolvedOptionId, qty:1});
   saveCart(); renderCart(); notify(`${product.name} додано до кошика`);
 }
 
-function changeQty(productId, delta) {
-  const item = cart.find(i => i.productId === productId);
+function changeQty(productId, optionId, delta) {
+  const item = cart.find(i => i.productId === productId && (i.optionId || null) === (optionId || null));
   if (!item) return;
   hideCheckoutSuccess();
   item.qty += delta;
-  if (item.qty <= 0) cart = cart.filter(i => i.productId !== productId);
+  if (item.qty <= 0) cart = cart.filter(i => !(i.productId === productId && (i.optionId || null) === (optionId || null)));
   saveCart(); renderCart();
 }
 
-function removeItem(productId) {
+function removeItem(productId, optionId) {
   hideCheckoutSuccess();
-  cart = cart.filter(i => i.productId !== productId);
+  cart = cart.filter(i => !(i.productId === productId && (i.optionId || null) === (optionId || null)));
   saveCart(); renderCart();
 }
 
@@ -428,11 +486,24 @@ function renderCart() {
     return;
   }
 
-  cart = cart.filter(item => getProduct(item.productId));
+  cart = cart.filter(item => {
+    const product = getProduct(item.productId);
+    if (!product) return false;
+    const options = productOptions(product);
+
+    if (!item.optionId && options.length) {
+      item.optionId = options[0].id;
+      return true;
+    }
+
+    if (!item.optionId) return true;
+
+    return options.some(option => Number(option.id) === Number(item.optionId));
+  });
   saveCart();
 
   const qty = cart.reduce((s,i) => s + i.qty, 0);
-  const total = cart.reduce((s,i) => s + Number(getProduct(i.productId).price) * i.qty, 0);
+  const total = cart.reduce((s,i) => s + productUnitPrice(getProduct(i.productId), i.optionId) * i.qty, 0);
   cartCount.textContent = qty;
   cartItemsCount.textContent = qty;
   cartTotal.textContent = money(total);
@@ -449,29 +520,35 @@ function renderCart() {
   cartSummary.classList.remove('hidden');
   cartItems.innerHTML = cart.map(item => {
     const product = getProduct(item.productId);
+    const option = item.optionId
+      ? productOptions(product).find(productOption => Number(productOption.id) === Number(item.optionId))
+      : null;
+    const unitPrice = productUnitPrice(product, item.optionId);
     return `
       <div class="cart-item">
         <div class="cart-item__photo">${product.image ? `<img src="${product.image}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:14px">` : '🍣'}</div>
         <div>
           <div class="cart-item__name">${product.name}</div>
-          <div class="cart-item__price">${money(product.price)} / шт.</div>
+          ${option ? `<div class="cart-item__option">${option.name}</div>` : ''}
+          <div class="cart-item__price">${money(unitPrice)} / шт.</div>
           <div class="cart-item__controls">
-            <button data-action="minus" data-id="${product.id}">−</button>
+            <button data-action="minus" data-id="${product.id}" data-option-id="${item.optionId || ''}">−</button>
             <span>${item.qty}</span>
-            <button data-action="plus" data-id="${product.id}">+</button>
+            <button data-action="plus" data-id="${product.id}" data-option-id="${item.optionId || ''}">+</button>
           </div>
-          <button class="cart-remove" data-action="remove" data-id="${product.id}">Видалити</button>
+          <button class="cart-remove" data-action="remove" data-id="${product.id}" data-option-id="${item.optionId || ''}">Видалити</button>
         </div>
-        <div class="cart-item__sum">${money(Number(product.price) * item.qty)}</div>
+        <div class="cart-item__sum">${money(unitPrice * item.qty)}</div>
       </div>`;
   }).join('');
 
   cartItems.querySelectorAll('[data-action]').forEach(button => {
     button.addEventListener('click', () => {
       const id = Number(button.dataset.id);
-      if (button.dataset.action === 'plus') changeQty(id, 1);
-      if (button.dataset.action === 'minus') changeQty(id, -1);
-      if (button.dataset.action === 'remove') removeItem(id);
+      const optionId = Number(button.dataset.optionId) || null;
+      if (button.dataset.action === 'plus') changeQty(id, optionId, 1);
+      if (button.dataset.action === 'minus') changeQty(id, optionId, -1);
+      if (button.dataset.action === 'remove') removeItem(id, optionId);
     });
   });
 }
@@ -515,6 +592,7 @@ async function submitOrder(event) {
         },
         items: cart.map(item => ({
           product_id: item.productId,
+          product_option_id: item.optionId,
           qty: item.qty,
         })),
       }),

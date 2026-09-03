@@ -77,6 +77,9 @@
             <tr>
                 <td>
                     <strong>{{ $item->product_name }}</strong>
+                    @if($item->product_option_name)
+                        <div style="color:var(--green);font-weight:800;">{{ $item->product_option_name }}</div>
+                    @endif
                     <div class="muted">{{ $item->product_slug }}</div>
                 </td>
                 <td>{{ $item->quantity }}</td>

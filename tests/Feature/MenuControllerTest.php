@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Category;
 use App\Models\City;
 use App\Models\Product;
+use App\Models\ProductOption;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Tests\TestCase;
 
@@ -42,6 +43,14 @@ class MenuControllerTest extends TestCase
             'price' => 299,
             'is_active' => true,
         ]);
+        ProductOption::create([
+            'product_id' => $product->id,
+            'name' => 'ЛОСОСЬ',
+            'price' => 300,
+            'weight' => '270г',
+            'sort_order' => 1,
+            'is_active' => true,
+        ]);
 
         $response = $this->getJson('/api/menu/pereiaslav');
 
@@ -53,7 +62,10 @@ class MenuControllerTest extends TestCase
             ->assertJsonPath('city.phones.1', '0955505450')
             ->assertJsonPath('categories.0.slug', 'rolls')
             ->assertJsonPath('categories.0.products.0.slug', 'philadelphia')
-            ->assertJsonPath('categories.0.products.0.price', 299);
+            ->assertJsonPath('categories.0.products.0.price', 299)
+            ->assertJsonPath('categories.0.products.0.options.0.name', 'ЛОСОСЬ')
+            ->assertJsonPath('categories.0.products.0.options.0.price', '300.00')
+            ->assertJsonPath('categories.0.products.0.options.0.weight', '270г');
     }
 
     public function test_returns_404_when_city_slug_does_not_exist(): void

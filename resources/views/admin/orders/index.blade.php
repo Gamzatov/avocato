@@ -64,7 +64,7 @@
     </table>
 
     <div style="margin-top:18px;">
-        {{ $orders->links() }}
+        {{ $orders->links('pagination::bootstrap-4') }}
     </div>
 </div>
 @endsection

@@ -7,6 +7,7 @@ use App\Http\Requests\Api\StoreOrderRequest;
 use App\Models\City;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\ProductOption;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -24,8 +25,9 @@ class OrderController extends Controller
                 ->firstOrFail();
 
             $items = collect($data['items']);
+            $productIds = $items->pluck('product_id')->unique()->values();
             $products = Product::query()
-                ->whereIn('id', $items->pluck('product_id'))
+                ->whereIn('id', $productIds)
                 ->where('is_active', true)
                 ->whereHas('cities', function ($query) use ($city): void {
                     $query
@@ -40,7 +42,13 @@ class OrderController extends Controller
                 ->get()
                 ->keyBy('id');
 
-            if ($products->count() !== $items->count()) {
+            $options = ProductOption::query()
+                ->whereIn('id', $items->pluck('product_option_id')->filter())
+                ->where('is_active', true)
+                ->get()
+                ->keyBy('id');
+
+            if ($products->count() !== $productIds->count()) {
                 throw ValidationException::withMessages([
                     'items' => 'У кошику є товари, недоступні для обраного міста.',
                 ]);
@@ -59,15 +67,20 @@ class OrderController extends Controller
 
             foreach ($items as $item) {
                 $product = $products->get($item['product_id']);
+                $option = isset($item['product_option_id'])
+                    ? $options->get($item['product_option_id'])
+                    : null;
                 $quantity = (int) $item['qty'];
-                $unitPrice = (float) $product->cities->first()->pivot->price;
+                $unitPrice = (float) ($option?->price ?? $product->cities->first()->pivot->price);
                 $lineTotal = $unitPrice * $quantity;
                 $total += $lineTotal;
 
                 $order->items()->create([
                     'product_id' => $product->id,
+                    'product_option_id' => $option?->id,
                     'product_name' => $product->name,
                     'product_slug' => $product->slug,
+                    'product_option_name' => $option?->name,
                     'unit_price' => $unitPrice,
                     'quantity' => $quantity,
                     'line_total' => $lineTotal,

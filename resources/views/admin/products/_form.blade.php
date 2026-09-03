@@ -2,6 +2,24 @@
     $cityPivots = $product->exists
         ? $product->cities->keyBy('id')
         : collect();
+    $optionNames = [
+        'ЛОСОСЬ',
+        'ТУНЕЦЬ',
+        'ВУГОР',
+        'КРЕВЕТКА',
+        'СНІЖНИЙ КРАБ',
+        'КОПЧЕНИЙ ЛОСОСЬ',
+        'СМАЖЕНИЙ ЛОСОСЬ',
+    ];
+    $optionRows = old('options', $product->options->map(fn ($option) => [
+        'id' => $option->id,
+        'name' => $option->name,
+        'price' => $option->price,
+        'weight' => $option->weight,
+        'sort_order' => $option->sort_order,
+        'is_active' => $option->is_active,
+    ])->all());
+    $emptyRowsCount = max(3, 7 - count($optionRows));
 @endphp
 
 <div class="panel">
@@ -34,6 +52,109 @@
                 <label>Вага</label>
                 <input name="weight" value="{{ old('weight', $product->weight) }}" placeholder="наприклад: 290 г">
             </div>
+
+            <h3>Варіанти для селекту</h3>
+            <p class="muted" style="margin-top:-4px;">
+                Заповніть ці рядки, якщо товар має вибір начинки або типу.
+            </p>
+
+            @foreach($optionRows as $index => $option)
+                <div class="city-box">
+                    <input type="hidden" name="options[{{ $index }}][id]" value="{{ $option['id'] ?? '' }}">
+
+                    <div class="field">
+                        <label>Назва варіанту</label>
+                        <select name="options[{{ $index }}][name]">
+                            <option value="">Оберіть варіант</option>
+                            @foreach($optionNames as $optionName)
+                                <option value="{{ $optionName }}" @selected(($option['name'] ?? '') === $optionName)>
+                                    {{ $optionName }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="field">
+                            <label>Ціна, грн</label>
+                            <input type="number"
+                                   step="0.01"
+                                   min="0"
+                                   name="options[{{ $index }}][price]"
+                                   value="{{ $option['price'] ?? '' }}">
+                        </div>
+
+                        <div class="field">
+                            <label>Вага</label>
+                            <input name="options[{{ $index }}][weight]"
+                                   value="{{ $option['weight'] ?? '' }}"
+                                   placeholder="наприклад: 270г">
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="options[{{ $index }}][sort_order]" value="{{ $option['sort_order'] ?? $index }}">
+
+                    <div class="checkbox-row">
+                        <input type="hidden" name="options[{{ $index }}][is_active]" value="0">
+                        <input id="option_{{ $index }}"
+                               type="checkbox"
+                               name="options[{{ $index }}][is_active]"
+                               value="1"
+                               @checked((bool) ($option['is_active'] ?? true))>
+                        <label for="option_{{ $index }}" style="margin:0;">Показувати варіант</label>
+                    </div>
+
+                    @if(!empty($option['id']))
+                        <div class="checkbox-row" style="margin-top:10px;">
+                            <input type="hidden" name="options[{{ $index }}][delete]" value="0">
+                            <input id="option_delete_{{ $index }}"
+                                   type="checkbox"
+                                   name="options[{{ $index }}][delete]"
+                                   value="1">
+                            <label for="option_delete_{{ $index }}" style="margin:0;">Видалити варіант</label>
+                        </div>
+                    @endif
+                </div>
+            @endforeach
+
+            @for($i = 0; $i < $emptyRowsCount; $i++)
+                @php($index = count($optionRows) + $i)
+                <div class="city-box">
+                    <div class="field">
+                        <label>Назва варіанту</label>
+                        <select name="options[{{ $index }}][name]">
+                            <option value="">Оберіть варіант</option>
+                            @foreach($optionNames as $optionName)
+                                <option value="{{ $optionName }}">{{ $optionName }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="field">
+                            <label>Ціна, грн</label>
+                            <input type="number" step="0.01" min="0" name="options[{{ $index }}][price]">
+                        </div>
+
+                        <div class="field">
+                            <label>Вага</label>
+                            <input name="options[{{ $index }}][weight]" placeholder="наприклад: 270г">
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="options[{{ $index }}][sort_order]" value="{{ $index }}">
+
+                    <div class="checkbox-row">
+                        <input type="hidden" name="options[{{ $index }}][is_active]" value="0">
+                        <input id="option_{{ $index }}"
+                               type="checkbox"
+                               name="options[{{ $index }}][is_active]"
+                               value="1"
+                               checked>
+                        <label for="option_{{ $index }}" style="margin:0;">Показувати варіант</label>
+                    </div>
+                </div>
+            @endfor
         </div>
 
         <div>
