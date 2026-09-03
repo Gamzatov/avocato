@@ -7,11 +7,16 @@ let createdOrderId = null;
 let cart = JSON.parse(localStorage.getItem('avocatoCart') || '[]');
 let selectedProductOptions = {};
 const productsPerPage = 9;
+const cityHours = {
+  pereiaslav: '10:00–22:00',
+  berezan: '9:00–21:00',
+};
 
 const $ = id => document.getElementById(id);
 const cityModal = $('cityModal');
 const selectedCity = $('selectedCity');
 const heroCity = $('heroCity');
+const heroHours = $('heroHours');
 const headerPhones = $('headerPhones');
 const headerPhone = $('headerPhone');
 const heroPhone = $('heroPhone');
@@ -162,6 +167,7 @@ async function loadMenu(citySlug, options = {}) {
 
   selectedCity.textContent = menuData.city.name;
   heroCity.textContent = menuData.city.name;
+  heroHours.textContent = cityHours[citySlug] || '9:00–21:00';
   cartCity.textContent = menuData.city.name;
   const primaryPhone = cityPhones()[0];
   renderHeaderPhones();

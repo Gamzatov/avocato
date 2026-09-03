@@ -125,7 +125,7 @@
           </div>
 
           <div class="hero-meta">
-            <div><strong>9:00–21:00</strong><span>щодня</span></div>
+            <div><strong id="heroHours">9:00–21:00</strong><span>щодня</span></div>
             <div><strong id="heroCity">—</strong><span>ваше місто</span></div>
           </div>
         </div>
