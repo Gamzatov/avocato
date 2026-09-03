@@ -2,10 +2,35 @@
 <html lang="uk">
 
 <head>
+  @php
+    $siteName = 'AvoCato Sushi';
+    $siteTitle = 'AvoCato Sushi — доставка суші';
+    $siteDescription = 'Свіжі роли, сети, wok, мідії та інші страви AvoCato Sushi у Переяславі та Березані.';
+    $siteUrl = url('/');
+    $socialImage = asset('images/logo.png');
+  @endphp
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#090909" />
-  <title>AvoCato Sushi — доставка суші</title>
+  <meta name="description" content="{{ $siteDescription }}" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="uk_UA" />
+  <meta property="og:site_name" content="{{ $siteName }}" />
+  <meta property="og:title" content="{{ $siteTitle }}" />
+  <meta property="og:description" content="{{ $siteDescription }}" />
+  <meta property="og:url" content="{{ $siteUrl }}" />
+  <meta property="og:image" content="{{ $socialImage }}" />
+  <meta property="og:image:secure_url" content="{{ $socialImage }}" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1254" />
+  <meta property="og:image:height" content="1254" />
+  <meta property="og:image:alt" content="{{ $siteName }}" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="{{ $siteTitle }}" />
+  <meta name="twitter:description" content="{{ $siteDescription }}" />
+  <meta name="twitter:image" content="{{ $socialImage }}" />
+  <link rel="canonical" href="{{ $siteUrl }}" />
+  <title>{{ $siteTitle }}</title>
   <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
   <link rel="apple-touch-icon" href="{{ asset('images/logo.png') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
