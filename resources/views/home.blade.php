@@ -146,7 +146,7 @@
         </div>
 
         <div class="category-grid" id="categoryGrid"></div>
-      </div>тзь
+      </div>
     </section>
 
     <section class="section products-section">
