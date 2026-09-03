@@ -36,6 +36,7 @@ class ProductControllerTest extends TestCase
                 'description' => 'Лосось, сир, рис',
                 'weight' => '290 г',
                 'sort_order' => 3,
+                'badge' => 'hit',
                 'is_active' => '1',
                 'cities' => [
                     $city->id => [
@@ -54,6 +55,7 @@ class ProductControllerTest extends TestCase
             'name' => 'Філадельфія',
             'slug' => 'filadelfiia',
             'sort_order' => 3,
+            'badge' => 'hit',
             'is_active' => true,
         ]);
         $this->assertDatabaseHas('city_product', [
@@ -147,6 +149,9 @@ class ProductControllerTest extends TestCase
         $response
             ->assertOk()
             ->assertSee('data-option-builder', false)
+            ->assertSee('Позначка')
+            ->assertSee('Новинка')
+            ->assertSee('Немає в наявності')
             ->assertSee('+ Додати вибір начинки')
             ->assertDontSee('name="options[0][name]"', false);
     }

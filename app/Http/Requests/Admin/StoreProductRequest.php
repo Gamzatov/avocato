@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Models\Product;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreProductRequest extends FormRequest
 {
@@ -20,6 +22,7 @@ class StoreProductRequest extends FormRequest
             'weight' => ['nullable', 'string', 'max:100'],
             'image' => ['nullable', 'image', 'max:4096'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
+            'badge' => ['nullable', Rule::in(array_keys(Product::badgeOptions()))],
             'is_active' => ['nullable', 'boolean'],
             'cities' => ['required', 'array'],
             'cities.*.price' => ['nullable', 'numeric', 'min:0'],

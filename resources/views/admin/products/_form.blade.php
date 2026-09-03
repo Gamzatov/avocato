@@ -1,4 +1,6 @@
 @php
+    use App\Models\Product;
+
     $cityPivots = $product->exists
         ? $product->cities->keyBy('id')
         : collect();
@@ -155,6 +157,18 @@
                 <label>Сортування</label>
                 <input type="number" min="0" name="sort_order"
                        value="{{ old('sort_order', $product->sort_order ?? 0) }}">
+            </div>
+
+            <div class="field">
+                <label>Позначка</label>
+                <select name="badge">
+                    <option value="">Без позначки</option>
+                    @foreach(Product::badgeOptions() as $badgeValue => $badgeLabel)
+                        <option value="{{ $badgeValue }}" @selected(old('badge', $product->badge) === $badgeValue)>
+                            {{ $badgeLabel }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
 
             <div class="field checkbox-row">

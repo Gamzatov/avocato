@@ -221,6 +221,10 @@
             font-size: 12px;
             font-weight: 800;
         }
+        .status-pill--stock {
+            background: #3a1818;
+            color: #ffaaaa;
+        }
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);

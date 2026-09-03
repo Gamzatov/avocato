@@ -29,6 +29,11 @@ class OrderController extends Controller
             $products = Product::query()
                 ->whereIn('id', $productIds)
                 ->where('is_active', true)
+                ->where(function ($query): void {
+                    $query
+                        ->whereNull('badge')
+                        ->orWhere('badge', '!=', Product::BadgeOutOfStock);
+                })
                 ->whereHas('cities', function ($query) use ($city): void {
                     $query
                         ->where('cities.id', $city->id)

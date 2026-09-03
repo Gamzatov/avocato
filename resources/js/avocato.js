@@ -11,6 +11,12 @@ const cityHours = {
   pereiaslav: '10:00–22:00',
   berezan: '9:00–21:00',
 };
+const productBadgeLabels = {
+  new: 'Новинка',
+  hit: 'Хіт',
+  sale: 'Акція',
+  out_of_stock: 'Немає в наявності',
+};
 
 const $ = id => document.getElementById(id);
 const cityModal = $('cityModal');
@@ -270,13 +276,16 @@ function renderProducts() {
     const options = productOptions(product);
     const option = selectedOption(product);
     const weight = productWeight(product, option?.id);
+    const badgeLabel = product.badge_label || productBadgeLabels[product.badge] || '';
+    const isAvailable = product.is_available !== false && product.badge !== 'out_of_stock';
 
     return `
-      <article class="product-card">
+      <article class="product-card ${isAvailable ? '' : 'is-unavailable'}">
         <div class="product-photo">
           ${product.image
             ? `<img src="${product.image}" alt="${product.name}" style="width:100%;height:100%;object-fit:cover">`
             : '<span style="font-size:96px">🍣</span>'}
+          ${badgeLabel ? `<span class="product-badge product-badge--${product.badge || 'default'}">${badgeLabel}</span>` : ''}
         </div>
         <div class="product-body">
           <div class="product-top">
@@ -303,7 +312,9 @@ function renderProducts() {
                 : ''}
             </div>
             <div class="product-actions">
-              <button class="btn btn-green order-btn" data-product-id="${product.id}" data-option-id="${option?.id || ''}">У кошик</button>
+              <button class="btn btn-green order-btn" data-product-id="${product.id}" data-option-id="${option?.id || ''}" ${isAvailable ? '' : 'disabled'}>
+                ${isAvailable ? 'У кошик' : 'Немає'}
+              </button>
               <a class="btn btn-outline" href="${tel(cityPhones()[0])}">Зателефонувати</a>
             </div>
           </div>
@@ -410,6 +421,10 @@ function saveCart() {
 function addToCart(productId, optionId = null) {
   const product = getProduct(productId);
   if (!product) return;
+  if (product.is_available === false || product.badge === 'out_of_stock') {
+    notify('Цієї позиції зараз немає в наявності.');
+    return;
+  }
   hideCheckoutSuccess();
   const option = optionId
     ? productOptions(product).find(item => Number(item.id) === Number(optionId))

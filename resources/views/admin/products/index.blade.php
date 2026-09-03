@@ -48,6 +48,13 @@
                 </td>
                 <td>
                     <strong>{{ $product->name }}</strong>
+                    @if($product->badgeLabel())
+                        <div style="margin-top:6px;">
+                            <span @class(['status-pill', 'status-pill--stock' => $product->isOutOfStock()])>
+                                {{ $product->badgeLabel() }}
+                            </span>
+                        </div>
+                    @endif
                     <div class="muted">{{ $product->weight }}</div>
                     @if($product->options->isNotEmpty())
                         <div class="muted">

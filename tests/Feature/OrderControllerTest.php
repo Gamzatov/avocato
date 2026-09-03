@@ -81,6 +81,29 @@ class OrderControllerTest extends TestCase
         $this->assertDatabaseCount('order_items', 0);
     }
 
+    public function test_returns_validation_errors_when_product_is_out_of_stock(): void
+    {
+        [$city, $product] = $this->createAvailableProduct(badge: Product::BadgeOutOfStock);
+
+        $response = $this->postJson('/api/orders', [
+            'city_slug' => $city->slug,
+            'customer' => [
+                'name' => 'Олена',
+                'phone' => '+380730054050',
+            ],
+            'items' => [
+                ['product_id' => $product->id, 'qty' => 1],
+            ],
+        ]);
+
+        $response
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('items');
+
+        $this->assertDatabaseCount('orders', 0);
+        $this->assertDatabaseCount('order_items', 0);
+    }
+
     public function test_valid_payload_creates_order_with_product_option(): void
     {
         [$city, $product] = $this->createAvailableProduct();
@@ -155,7 +178,7 @@ class OrderControllerTest extends TestCase
     /**
      * @return array{City, Product}
      */
-    private function createAvailableProduct(bool $isAvailable = true): array
+    private function createAvailableProduct(bool $isAvailable = true, ?string $badge = null): array
     {
         $city = City::create([
             'name' => 'Переяслав',
@@ -177,6 +200,7 @@ class OrderControllerTest extends TestCase
             'description' => 'Лосось, сир, рис',
             'weight' => '250 г',
             'sort_order' => 1,
+            'badge' => $badge,
             'is_active' => true,
         ]);
 

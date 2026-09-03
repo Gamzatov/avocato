@@ -30,6 +30,7 @@ class ProductController extends Controller
                         ->where('name', 'like', "%{$search}%")
                         ->orWhere('description', 'like', "%{$search}%")
                         ->orWhere('weight', 'like', "%{$search}%")
+                        ->orWhere('badge', 'like', "%{$search}%")
                         ->orWhereHas('category', function ($query) use ($search) {
                             $query->where('name', 'like', "%{$search}%");
                         })
@@ -67,6 +68,7 @@ class ProductController extends Controller
 
             $productData['slug'] = $this->generateUniqueSlug($productData['name']);
             $productData['is_active'] = $request->boolean('is_active');
+            $productData['badge'] = ($productData['badge'] ?? null) ?: null;
             $productData['sort_order'] = $productData['sort_order'] ?? 0;
 
             $product = Product::create($productData);
@@ -106,6 +108,7 @@ class ProductController extends Controller
             }
 
             $productData['is_active'] = $request->boolean('is_active');
+            $productData['badge'] = ($productData['badge'] ?? null) ?: null;
             $productData['sort_order'] = $productData['sort_order'] ?? 0;
 
             $product->update($productData);

@@ -36,6 +36,7 @@ class MenuControllerTest extends TestCase
             'description' => 'Лосось, сир, рис',
             'weight' => '250 г',
             'sort_order' => 1,
+            'badge' => 'new',
             'is_active' => true,
         ]);
 
@@ -63,6 +64,9 @@ class MenuControllerTest extends TestCase
             ->assertJsonPath('categories.0.slug', 'rolls')
             ->assertJsonPath('categories.0.products.0.slug', 'philadelphia')
             ->assertJsonPath('categories.0.products.0.price', 299)
+            ->assertJsonPath('categories.0.products.0.badge', 'new')
+            ->assertJsonPath('categories.0.products.0.badge_label', 'Новинка')
+            ->assertJsonPath('categories.0.products.0.is_available', true)
             ->assertJsonPath('categories.0.products.0.options.0.name', 'ЛОСОСЬ')
             ->assertJsonPath('categories.0.products.0.options.0.price', '300.00')
             ->assertJsonPath('categories.0.products.0.options.0.weight', '270г');

@@ -75,6 +75,9 @@ class MenuController extends Controller
                             ? asset('storage/'.$product->image)
                             : null,
                         'price' => $city?->pivot?->price,
+                        'badge' => $product->badge,
+                        'badge_label' => $product->badgeLabel(),
+                        'is_available' => ! $product->isOutOfStock(),
                         'options' => $product->options->map(fn ($option): array => [
                             'id' => $option->id,
                             'name' => $option->name,

@@ -9,6 +9,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
+    public const BadgeNew = 'new';
+
+    public const BadgeHit = 'hit';
+
+    public const BadgeSale = 'sale';
+
+    public const BadgeOutOfStock = 'out_of_stock';
+
     protected $fillable = [
         'category_id',
         'name',
@@ -17,6 +25,7 @@ class Product extends Model
         'weight',
         'image',
         'sort_order',
+        'badge',
         'is_active',
     ];
 
@@ -42,5 +51,28 @@ class Product extends Model
     public function options(): HasMany
     {
         return $this->hasMany(ProductOption::class)->orderBy('sort_order')->orderBy('name');
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function badgeOptions(): array
+    {
+        return [
+            self::BadgeNew => 'Новинка',
+            self::BadgeHit => 'Хіт',
+            self::BadgeSale => 'Акція',
+            self::BadgeOutOfStock => 'Немає в наявності',
+        ];
+    }
+
+    public function badgeLabel(): ?string
+    {
+        return self::badgeOptions()[$this->badge] ?? null;
+    }
+
+    public function isOutOfStock(): bool
+    {
+        return $this->badge === self::BadgeOutOfStock;
     }
 }
