@@ -147,6 +147,63 @@
             border-radius: 12px;
             margin-bottom: 12px;
         }
+        .option-builder {
+            margin-top: 22px;
+        }
+        .option-builder__head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+        .option-builder__head h3 {
+            margin: 0 0 6px;
+        }
+        .option-builder__head .muted {
+            margin: 0;
+        }
+        .option-builder__list {
+            display: grid;
+            gap: 12px;
+        }
+        .option-card {
+            padding: 16px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: #111;
+        }
+        .option-card__summary {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .option-card.is-collapsed .option-card__summary {
+            display: flex;
+        }
+        .option-card.is-collapsed .option-card__form {
+            display: none;
+        }
+        .option-card__summary strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+        .option-card__summary span {
+            color: var(--muted);
+            font-size: 14px;
+        }
+        .option-card__actions,
+        .option-card__footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .option-card__footer {
+            margin-top: 4px;
+        }
         .checkbox-row {
             display: flex;
             align-items: center;
@@ -222,6 +279,16 @@
             .summary-grid { grid-template-columns: 1fr; }
             table { display: block; overflow-x: auto; }
             .toolbar { align-items: flex-start; flex-direction: column; }
+            .option-builder__head,
+            .option-card__summary {
+                flex-direction: column;
+            }
+            .option-builder__head,
+            .option-card__summary,
+            .option-card__actions,
+            .option-card__footer {
+                align-items: stretch;
+            }
         }
     </style>
 </head>

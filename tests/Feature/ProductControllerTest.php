@@ -125,6 +125,32 @@ class ProductControllerTest extends TestCase
         ]);
     }
 
+    public function test_product_create_form_starts_with_option_builder_button(): void
+    {
+        Category::create([
+            'name' => 'Роли',
+            'slug' => 'rolls',
+            'sort_order' => 1,
+            'is_active' => true,
+        ]);
+        City::create([
+            'name' => 'Переяслав',
+            'slug' => 'pereiaslav',
+            'phone' => '+380000000001',
+            'is_active' => true,
+        ]);
+
+        $response = $this
+            ->actingAs(User::factory()->create())
+            ->get(route('admin.products.create'));
+
+        $response
+            ->assertOk()
+            ->assertSee('data-option-builder', false)
+            ->assertSee('+ Додати вибір начинки')
+            ->assertDontSee('name="options[0][name]"', false);
+    }
+
     public function test_authenticated_admin_update_keeps_existing_product_slug(): void
     {
         $category = Category::create([
