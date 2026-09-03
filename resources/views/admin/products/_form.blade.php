@@ -58,7 +58,7 @@
                 Заповніть ці рядки, якщо товар має вибір начинки або типу.
             </p>
 
-            @foreach($optionRows as $index => $option)
+            <?php foreach ($optionRows as $index => $option): ?>
                 <div class="city-box">
                     <input type="hidden" name="options[{{ $index }}][id]" value="{{ $option['id'] ?? '' }}">
 
@@ -66,11 +66,11 @@
                         <label>Назва варіанту</label>
                         <select name="options[{{ $index }}][name]">
                             <option value="">Оберіть варіант</option>
-                            @foreach($optionNames as $optionName)
+                            <?php foreach ($optionNames as $optionName): ?>
                                 <option value="{{ $optionName }}" @selected(($option['name'] ?? '') === $optionName)>
                                     {{ $optionName }}
                                 </option>
-                            @endforeach
+                            <?php endforeach; ?>
                         </select>
                     </div>
 
@@ -115,18 +115,18 @@
                         </div>
                     @endif
                 </div>
-            @endforeach
+            <?php endforeach; ?>
 
-            @for($i = 0; $i < $emptyRowsCount; $i++)
-                @php($index = count($optionRows) + $i)
+            <?php for ($i = 0; $i < $emptyRowsCount; $i++): ?>
+                <?php $index = count($optionRows) + $i; ?>
                 <div class="city-box">
                     <div class="field">
                         <label>Назва варіанту</label>
                         <select name="options[{{ $index }}][name]">
                             <option value="">Оберіть варіант</option>
-                            @foreach($optionNames as $optionName)
+                            <?php foreach ($optionNames as $optionName): ?>
                                 <option value="{{ $optionName }}">{{ $optionName }}</option>
-                            @endforeach
+                            <?php endforeach; ?>
                         </select>
                     </div>
 
@@ -154,7 +154,7 @@
                         <label for="option_{{ $index }}" style="margin:0;">Показувати варіант</label>
                     </div>
                 </div>
-            @endfor
+            <?php endfor; ?>
         </div>
 
         <div>
@@ -184,7 +184,7 @@
 
             <h3>Міста та ціни</h3>
 
-            @foreach($cities as $city)
+            <?php foreach ($cities as $city): ?>
                 @php
                     $pivot = $cityPivots->get($city->id)?->pivot;
                 @endphp
@@ -215,7 +215,7 @@
                         </label>
                     </div>
                 </div>
-            @endforeach
+            <?php endforeach; ?>
         </div>
     </div>
 
