@@ -736,7 +736,6 @@ h3 {
     0 0 0 1px rgba(255, 255, 255, .18) inset,
     0 0 20px rgba(185, 220, 61, .38),
     0 8px 22px rgba(0, 0, 0, .34);
-  animation: badgePulse 2.6s ease-in-out infinite;
   isolation: isolate;
 }
 
@@ -747,8 +746,10 @@ h3 {
   z-index: -1;
   border-radius: inherit;
   background: currentColor;
-  opacity: .18;
+  opacity: .14;
   filter: blur(10px);
+  transform: scale(.96);
+  animation: badgeGlow 3.8s cubic-bezier(.45, 0, .55, 1) infinite;
 }
 
 .product-badge--hit {
@@ -783,21 +784,21 @@ h3 {
   display: none;
 }
 
-@keyframes badgePulse {
+@keyframes badgeGlow {
   0%,
   100% {
-    transform: translateY(0) scale(1);
-    filter: brightness(1);
+    opacity: .12;
+    transform: scale(.94);
   }
 
   50% {
-    transform: translateY(-1px) scale(1.035);
-    filter: brightness(1.08);
+    opacity: .28;
+    transform: scale(1.08);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .product-badge {
+  .product-badge::after {
     animation: none;
   }
 }
