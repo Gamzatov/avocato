@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-BmOq6xzT.css",
+    "file": "assets/app-BQ08lo0V.css",
     "name": "app",
     "names": [
       "app.css"
@@ -9,7 +9,7 @@
     "isEntry": true
   },
   "resources/css/avocato.css": {
-    "file": "assets/avocato-yif6pOT3.css",
+    "file": "assets/avocato-Dr7A4djn.css",
     "name": "avocato",
     "names": [
       "avocato.css"
@@ -24,7 +24,7 @@
     "isEntry": true
   },
   "resources/js/avocato.js": {
-    "file": "assets/avocato-BYN_pY8C.js",
+    "file": "assets/avocato-BfQrVzSA.js",
     "name": "avocato",
     "src": "resources/js/avocato.js",
     "isEntry": true

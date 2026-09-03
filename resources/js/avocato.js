@@ -167,7 +167,9 @@ async function loadMenu(citySlug, options = {}) {
 
   selectedCity.textContent = menuData.city.name;
   heroCity.textContent = menuData.city.name;
-  heroHours.textContent = cityHours[citySlug] || '9:00–21:00';
+  if (heroHours) {
+    heroHours.textContent = cityHours[citySlug] || '9:00–21:00';
+  }
   cartCity.textContent = menuData.city.name;
   const primaryPhone = cityPhones()[0];
   renderHeaderPhones();
@@ -197,20 +199,15 @@ function renderCategories() {
       id: 'all',
       name: 'Все',
       icon: '🍽️',
-      image: null,
+      image: '/images/main-hero.jpg',
       products: allProducts(),
     },
     ...menuData.categories,
   ];
 
   categoryGrid.innerHTML = categories.map(category => `
-    <button class="category-card ${category.id === activeCategoryId ? 'active' : ''}" data-category-id="${category.id}">
-      <span class="category-icon">
-        ${category.image
-          ? `<img src="${category.image}" alt="">`
-          : (category.icon || '🍣')}
-      </span>
-      <span>
+    <button class="category-card ${category.id === activeCategoryId ? 'active' : ''}" data-category-id="${category.id}" data-category-image="${category.image || ''}">
+      <span class="category-card__content">
         <span class="category-name">${category.name}</span>
         <small>${category.products.length} позицій</small>
       </span>
@@ -218,6 +215,10 @@ function renderCategories() {
   `).join('');
 
   categoryGrid.querySelectorAll('[data-category-id]').forEach(button => {
+    if (button.dataset.categoryImage) {
+      button.style.backgroundImage = `url("${button.dataset.categoryImage}")`;
+    }
+
     button.addEventListener('click', () => {
       activeCategoryId = button.dataset.categoryId === 'all'
         ? 'all'
@@ -626,20 +627,27 @@ async function chooseCity(slug) {
   const oldCity = currentCitySlug;
   const shouldClearCart = oldCity && oldCity !== slug && cart.length > 0;
 
+  closeCityModal();
+
   try {
     await loadMenu(slug, {clearCartBeforeRender: shouldClearCart});
     if (oldCity && oldCity !== slug) {
       hideCheckoutSuccess();
       renderCart();
     }
-    closeCityModal();
 
     if (shouldClearCart) {
       notify('Місто змінено. Кошик очищено.');
     } else {
       notify(`Обрано місто: ${menuData.city.name}`);
     }
-  } catch (e) { notify(e.message); }
+  } catch (e) {
+    if (!menuData) {
+      openCityModal();
+    }
+
+    notify(e.message);
+  }
 }
 
 function openCart() { renderCart(); cartDrawer.setAttribute('aria-hidden','false'); document.body.classList.add('cart-open'); }

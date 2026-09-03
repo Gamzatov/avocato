@@ -108,7 +108,6 @@
 
   <main id="top">
     <section class="hero">
-      <div class="hero-image" aria-hidden="true"></div>
       <div class="hero-overlay"></div>
 
       <div class="container hero-content">
@@ -129,6 +128,10 @@
             <div><strong id="heroCity">—</strong><span>ваше місто</span></div>
           </div>
         </div>
+
+        <div class="hero-image" aria-hidden="true">
+          <img src="{{ asset('images/main-hero.jpg') }}" alt="">
+        </div>
       </div>
     </section>
 
@@ -139,11 +142,11 @@
             <p class="eyebrow">Меню</p>
             <h2>Що будемо сьогодні?</h2>
           </div>
-          <p class="section-note">Оберіть категорію — нижче автоматично покажуться позиції.</p>
+          <p class="section-note">Оберіть категорію</p>
         </div>
 
         <div class="category-grid" id="categoryGrid"></div>
-      </div>
+      </div>тзь
     </section>
 
     <section class="section products-section">
