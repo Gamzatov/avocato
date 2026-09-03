@@ -220,10 +220,12 @@
             color: #f5f5f0;
             font-size: 12px;
             font-weight: 800;
+            box-shadow: 0 0 16px rgba(185, 220, 61, .16);
         }
         .status-pill--stock {
             background: #3a1818;
             color: #ffaaaa;
+            box-shadow: 0 0 16px rgba(227, 91, 91, .14);
         }
         .summary-grid {
             display: grid;

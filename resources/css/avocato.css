@@ -729,23 +729,77 @@ h3 {
   color: #101010;
   font-size: 11px;
   font-weight: 800;
-  padding: 6px 9px;
+  letter-spacing: 0;
+  padding: 7px 11px;
   border-radius: 999px;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, .18) inset,
+    0 0 20px rgba(185, 220, 61, .38),
+    0 8px 22px rgba(0, 0, 0, .34);
+  animation: badgePulse 2.6s ease-in-out infinite;
+  isolation: isolate;
+}
+
+.product-badge::after {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  z-index: -1;
+  border-radius: inherit;
+  background: currentColor;
+  opacity: .18;
+  filter: blur(10px);
 }
 
 .product-badge--hit {
   background: #ffcc3d;
+  color: #15110a;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, .2) inset,
+    0 0 22px rgba(255, 204, 61, .42),
+    0 8px 22px rgba(0, 0, 0, .34);
 }
 
 .product-badge--sale {
   background: #ff5b5b;
   color: #fff;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, .18) inset,
+    0 0 24px rgba(255, 91, 91, .46),
+    0 8px 22px rgba(0, 0, 0, .34);
 }
 
 .product-badge--out_of_stock {
   background: rgba(20, 20, 20, .86);
   border: 1px solid rgba(255, 255, 255, .18);
   color: #f7f7f2;
+  animation: none;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, .08) inset,
+    0 10px 22px rgba(0, 0, 0, .4);
+}
+
+.product-badge--out_of_stock::after {
+  display: none;
+}
+
+@keyframes badgePulse {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    filter: brightness(1);
+  }
+
+  50% {
+    transform: translateY(-1px) scale(1.035);
+    filter: brightness(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product-badge {
+    animation: none;
+  }
 }
 
 .product-body {
