@@ -233,39 +233,12 @@
           <strong id="cartTotal">0 ₴</strong>
         </div>
 
-        <button class="btn btn-green cart-checkout" id="checkoutButton" type="button">
-          Оформити замовлення
-        </button>
-
-        <form class="checkout-form hidden" id="checkoutForm">
-          <div class="checkout-field">
-            <label for="checkoutName">Ім’я *</label>
-            <input id="checkoutName" name="name" autocomplete="name" required>
-          </div>
-
-          <div class="checkout-field">
-            <label for="checkoutPhone">Телефон *</label>
-            <input id="checkoutPhone"
-                   name="phone"
-                   type="tel"
-                   inputmode="tel"
-                   autocomplete="tel"
-                   placeholder="+38 (0__) ___-__-__"
-                   maxlength="19"
-                   required>
-          </div>
-
-          <button class="btn btn-green cart-checkout" type="submit">
-            Створити замовлення
-          </button>
-        </form>
-
         <p class="cart-summary__note">
-          Після створення замовлення зателефонуйте нам для підтвердження.
+          Натисніть на номер нижче, щоб підтвердити замовлення телефоном.
         </p>
       </div>
 
-      <div class="checkout-success hidden" id="checkoutSuccess">
+      <div class="checkout-callout hidden" id="checkoutCallout">
         <p class="checkout-success__message">
           Щоб ми взяли його в роботу, зателефонуйте нам і підтвердіть замовлення.
         </p>

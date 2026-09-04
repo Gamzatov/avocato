@@ -1536,17 +1536,17 @@ h3 {
   resize: vertical;
 }
 
-.checkout-success {
+.checkout-callout {
   border-top: 1px solid #292929;
   padding-top: 22px;
   text-align: center;
 }
 
-.checkout-success.hidden {
+.checkout-callout.hidden {
   display: none;
 }
 
-.checkout-success p {
+.checkout-callout p {
   color: var(--muted);
   margin-bottom: 0;
 }

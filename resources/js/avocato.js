@@ -3,7 +3,6 @@ let menuData = null;
 let activeCategoryId = 'all';
 let productSearchTerm = '';
 let currentProductsPage = 1;
-let createdOrderId = null;
 let cart = JSON.parse(localStorage.getItem('avocatoCart') || '[]');
 let selectedProductOptions = {};
 const productsPerPage = 9;
@@ -42,10 +41,7 @@ const cartCount = $('cartCount');
 const cartItemsCount = $('cartItemsCount');
 const cartTotal = $('cartTotal');
 const cartCity = $('cartCity');
-const checkoutButton = $('checkoutButton');
-const checkoutForm = $('checkoutForm');
-const checkoutPhone = $('checkoutPhone');
-const checkoutSuccess = $('checkoutSuccess');
+const checkoutCallout = $('checkoutCallout');
 const checkoutCallButtons = $('checkoutCallButtons');
 
 function notify(text) {
@@ -449,34 +445,14 @@ function removeItem(productId, optionId) {
   saveCart(); renderCart();
 }
 
-function hideCheckoutForm(showButton = true) {
-  checkoutForm.classList.add('hidden');
-  checkoutButton.classList.toggle('hidden', !showButton);
-}
-
-function showCheckoutForm() {
-  if (!cart.length) {
-    notify('Додайте товари в кошик перед оформленням.');
-    return;
-  }
-
-  checkoutForm.classList.remove('hidden');
-  checkoutButton.classList.add('hidden');
-  checkoutForm.scrollIntoView({behavior: 'smooth', block: 'nearest'});
-}
-
-function hideCheckoutSuccess() {
-  createdOrderId = null;
-  checkoutSuccess.classList.add('hidden');
+function hideCheckoutCallout() {
+  checkoutCallout.classList.add('hidden');
   checkoutCallButtons.replaceChildren();
-  if (cart.length) checkoutButton.classList.remove('hidden');
 }
 
-function showCheckoutSuccess(orderId) {
-  createdOrderId = orderId;
+function showCheckoutCallout() {
   renderCheckoutCallButtons();
-  checkoutButton.classList.add('hidden');
-  checkoutSuccess.classList.remove('hidden');
+  checkoutCallout.classList.remove('hidden');
 }
 
 function renderCheckoutCallButtons() {
@@ -496,7 +472,7 @@ function renderCheckoutCallButtons() {
 function confirmOrderAndCall() {
   cart = [];
   saveCart();
-  hideCheckoutSuccess();
+  hideCheckoutCallout();
   renderCart();
 }
 
@@ -530,14 +506,15 @@ function renderCart() {
 
   if (!cart.length) {
     cartItems.innerHTML = '';
-    cartEmpty.classList.toggle('show', !createdOrderId);
+    cartEmpty.classList.add('show');
     cartSummary.classList.add('hidden');
-    hideCheckoutForm();
+    hideCheckoutCallout();
     return;
   }
 
   cartEmpty.classList.remove('show');
   cartSummary.classList.remove('hidden');
+  showCheckoutCallout();
   cartItems.innerHTML = cart.map(item => {
     const product = getProduct(item.productId);
     const option = item.optionId
@@ -573,69 +550,6 @@ function renderCart() {
   });
 }
 
-async function submitOrder(event) {
-  event.preventDefault();
-
-  if (!currentCitySlug || !menuData) {
-    notify('Спочатку оберіть місто.');
-    openCityModal();
-    return;
-  }
-
-  if (!cart.length) {
-    notify('Кошик порожній.');
-    return;
-  }
-
-  if (phoneDigits(checkoutPhone.value).length !== 9) {
-    notify('Введіть повний український номер телефону.');
-    checkoutPhone.focus();
-    return;
-  }
-
-  const formData = new FormData(checkoutForm);
-  const submitButton = checkoutForm.querySelector('button[type="submit"]');
-  submitButton.disabled = true;
-
-  try {
-    const response = await fetch('/api/orders', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        city_slug: currentCitySlug,
-        customer: {
-          name: formData.get('name'),
-          phone: formData.get('phone'),
-        },
-        items: cart.map(item => ({
-          product_id: item.productId,
-          product_option_id: item.optionId,
-          qty: item.qty,
-        })),
-      }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || 'Не вдалося створити замовлення');
-    }
-
-    checkoutForm.reset();
-    hideCheckoutForm(false);
-    showCheckoutSuccess(data.order.id);
-    renderCart();
-    notify(`Замовлення #${data.order.id} створено. Зателефонуйте для підтвердження.`);
-  } catch (error) {
-    notify(error.message);
-  } finally {
-    submitButton.disabled = false;
-  }
-}
-
 async function chooseCity(slug) {
   const oldCity = currentCitySlug;
   const shouldClearCart = oldCity && oldCity !== slug && cart.length > 0;
@@ -645,7 +559,7 @@ async function chooseCity(slug) {
   try {
     await loadMenu(slug, {clearCartBeforeRender: shouldClearCart});
     if (oldCity && oldCity !== slug) {
-      hideCheckoutSuccess();
+      hideCheckoutCallout();
       renderCart();
     }
 
@@ -673,11 +587,6 @@ $('cartButton').addEventListener('click', openCart);
 $('cartClose').addEventListener('click', closeCart);
 $('cartBackdrop').addEventListener('click', closeCart);
 $('cartGoMenu').addEventListener('click', () => { closeCart(); $('menu').scrollIntoView({behavior:'smooth'}); });
-checkoutButton.addEventListener('click', showCheckoutForm);
-checkoutForm.addEventListener('submit', submitOrder);
-checkoutPhone.addEventListener('input', () => {
-  checkoutPhone.value = formatUkrainianPhone(checkoutPhone.value);
-});
 productSearch.addEventListener('input', () => {
   productSearchTerm = productSearch.value;
   currentProductsPage = 1;
