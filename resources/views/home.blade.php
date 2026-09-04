@@ -130,7 +130,7 @@
         </div>
 
         <div class="hero-image" aria-hidden="true">
-          <img src="{{ asset('images/main-hero.jpg') }}" alt="">
+          <img src="{{ asset('images/all.jpg') }}" alt="">
         </div>
       </div>
     </section>
