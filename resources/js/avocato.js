@@ -46,7 +46,6 @@ const checkoutButton = $('checkoutButton');
 const checkoutForm = $('checkoutForm');
 const checkoutPhone = $('checkoutPhone');
 const checkoutSuccess = $('checkoutSuccess');
-const checkoutSuccessTitle = $('checkoutSuccessTitle');
 const checkoutCallButtons = $('checkoutCallButtons');
 
 function notify(text) {
@@ -475,7 +474,6 @@ function hideCheckoutSuccess() {
 
 function showCheckoutSuccess(orderId) {
   createdOrderId = orderId;
-  checkoutSuccessTitle.textContent = `Замовлення #${orderId} створено`;
   renderCheckoutCallButtons();
   checkoutButton.classList.add('hidden');
   checkoutSuccess.classList.remove('hidden');

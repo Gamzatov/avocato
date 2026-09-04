@@ -117,6 +117,7 @@
           <p class="hero-text">
             Роли, сети, wok, мідії та багато іншого — готуємо свіжо, красиво й по-нашому.
           </p>
+          <p class="hero-phone-note">Замовлення приймаємо лише по телефону.</p>
 
           <div class="hero-cta">
             <a class="btn btn-green" href="#menu">Дивитися меню</a>
@@ -176,7 +177,7 @@
           <p class="eyebrow">AvoCato Sushi</p>
           <h2>Замовляй так, як зручно тобі</h2>
           <p>
-            Обирай страви на сайті або телефонуй — ми підкажемо та приймемо замовлення.
+            Обирай страви на сайті і телефонуй — ми підкажемо та приймемо замовлення.
           </p>
         </div>
         <div class="promo-actions">
@@ -265,8 +266,9 @@
       </div>
 
       <div class="checkout-success hidden" id="checkoutSuccess">
-        <h3 id="checkoutSuccessTitle">Замовлення створено</h3>
-        <p>Щоб ми взяли його в роботу, зателефонуйте нам і підтвердіть замовлення.</p>
+        <p class="checkout-success__message">
+          Щоб ми взяли його в роботу, зателефонуйте нам і підтвердіть замовлення.
+        </p>
         <div class="checkout-call-buttons" id="checkoutCallButtons"></div>
       </div>
     </aside>
