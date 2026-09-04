@@ -2,11 +2,14 @@
 
 namespace Tests\Feature;
 
+use App\Models\AppSetting;
 use App\Models\Category;
 use App\Models\City;
 use App\Models\Product;
 use App\Models\ProductOption;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class MenuControllerTest extends TestCase
@@ -61,6 +64,7 @@ class MenuControllerTest extends TestCase
             ->assertJsonPath('city.phone', '0735505450')
             ->assertJsonPath('city.phones.0', '0735505450')
             ->assertJsonPath('city.phones.1', '0955505450')
+            ->assertJsonPath('all_category_image', asset('images/main-hero.jpg'))
             ->assertJsonPath('categories.0.slug', 'rolls')
             ->assertJsonPath('categories.0.products.0.slug', 'philadelphia')
             ->assertJsonPath('categories.0.products.0.price', 299)
@@ -77,5 +81,25 @@ class MenuControllerTest extends TestCase
         $response = $this->getJson('/api/menu/missing-city');
 
         $response->assertNotFound();
+    }
+
+    public function test_returns_configured_all_category_image(): void
+    {
+        Storage::fake('public');
+
+        $image = UploadedFile::fake()->image('all.jpg')->store('settings', 'public');
+        AppSetting::setValue(AppSetting::AllCategoryImage, $image);
+        City::create([
+            'name' => 'Переяслав',
+            'slug' => 'pereiaslav',
+            'phone' => '0735505450',
+            'is_active' => true,
+        ]);
+
+        $response = $this->getJson('/api/menu/pereiaslav');
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('all_category_image', Storage::disk('public')->url($image));
     }
 }

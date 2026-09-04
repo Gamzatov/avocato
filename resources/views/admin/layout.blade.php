@@ -311,6 +311,10 @@
                @class(['active' => request()->routeIs('admin.categories.*')])>
                 Фільтри
             </a>
+            <a href="{{ route('admin.menu-settings.edit') }}"
+               @class(['active' => request()->routeIs('admin.menu-settings.*')])>
+                Меню
+            </a>
             <a href="{{ route('admin.orders.index') }}"
                @class(['active' => request()->routeIs('admin.orders.*')])>
                 Замовлення

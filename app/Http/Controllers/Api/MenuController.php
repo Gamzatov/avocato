@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\AppSetting;
 use App\Models\Category;
 use App\Models\City;
 use Illuminate\Http\JsonResponse;
@@ -91,6 +92,7 @@ class MenuController extends Controller
 
         return response()->json([
             'city' => $this->cityPayload($city),
+            'all_category_image' => AppSetting::allCategoryImageUrl(),
             'categories' => $payload,
         ]);
     }

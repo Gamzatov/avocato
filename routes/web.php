@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\MenuSettingController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
 use Illuminate\Support\Facades\Route;
@@ -16,6 +17,8 @@ Route::middleware('auth')
     ->name('admin.')
     ->group(function () {
         Route::redirect('/', '/admin/products')->name('dashboard');
+        Route::get('menu-settings', [MenuSettingController::class, 'edit'])->name('menu-settings.edit');
+        Route::put('menu-settings', [MenuSettingController::class, 'update'])->name('menu-settings.update');
         Route::resource('categories', CategoryController::class)->except(['show']);
         Route::resource('products', ProductController::class)->except(['show']);
         Route::resource('orders', OrderController::class)->only(['index', 'show', 'update', 'destroy']);

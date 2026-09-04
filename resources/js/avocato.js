@@ -205,7 +205,7 @@ function renderCategories() {
       id: 'all',
       name: 'Все',
       icon: '🍽️',
-      image: '/images/all.jpg',
+      image: menuData.all_category_image || '/images/all.jpg',
       products: allProducts(),
     },
     ...menuData.categories,
