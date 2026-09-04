@@ -12,6 +12,9 @@
         'СНІЖНИЙ КРАБ',
         'КОПЧЕНИЙ ЛОСОСЬ',
         'СМАЖЕНИЙ ЛОСОСЬ',
+        'АВОКАДО',
+        'ЧУКА',
+        'КУРКА',
     ];
     $optionRows = old('options', $product->options->map(fn ($option) => [
         'id' => $option->id,
