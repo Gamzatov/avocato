@@ -100,6 +100,6 @@ class MenuControllerTest extends TestCase
 
         $response
             ->assertOk()
-            ->assertJsonPath('all_category_image', Storage::disk('public')->url($image));
+            ->assertJsonPath('all_category_image', asset('storage/'.$image));
     }
 }

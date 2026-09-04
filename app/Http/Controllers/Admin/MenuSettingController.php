@@ -16,6 +16,7 @@ class MenuSettingController extends Controller
         return view('admin.menu-settings.edit', [
             'allCategoryImage' => AppSetting::value(AppSetting::AllCategoryImage),
             'allCategoryImageUrl' => AppSetting::allCategoryImageUrl(),
+            'productOptionNames' => AppSetting::productOptionNames(),
         ]);
     }
 
@@ -23,7 +24,11 @@ class MenuSettingController extends Controller
     {
         $validated = $request->validate([
             'all_category_image' => ['nullable', 'image', 'max:4096'],
+            'product_option_names' => ['required', 'array'],
+            'product_option_names.*' => ['nullable', 'string', 'max:255'],
         ]);
+
+        AppSetting::setProductOptionNames($validated['product_option_names']);
 
         if ($request->hasFile('all_category_image')) {
             $previousImage = AppSetting::value(AppSetting::AllCategoryImage);

@@ -204,6 +204,16 @@
         .option-card__footer {
             margin-top: 4px;
         }
+        .settings-option-list {
+            display: grid;
+            gap: 10px;
+        }
+        .settings-option-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 10px;
+            align-items: center;
+        }
         .checkbox-row {
             display: flex;
             align-items: center;
@@ -294,6 +304,9 @@
             .option-card__actions,
             .option-card__footer {
                 align-items: stretch;
+            }
+            .settings-option-row {
+                grid-template-columns: 1fr;
             }
         }
     </style>

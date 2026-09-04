@@ -1,21 +1,11 @@
 @php
+    use App\Models\AppSetting;
     use App\Models\Product;
 
     $cityPivots = $product->exists
         ? $product->cities->keyBy('id')
         : collect();
-    $optionNames = [
-        'ЛОСОСЬ',
-        'ТУНЕЦЬ',
-        'ВУГОР',
-        'КРЕВЕТКА',
-        'СНІЖНИЙ КРАБ',
-        'КОПЧЕНИЙ ЛОСОСЬ',
-        'СМАЖЕНИЙ ЛОСОСЬ',
-        'АВОКАДО',
-        'ЧУКА',
-        'КУРКА',
-    ];
+    $optionNames = AppSetting::productOptionNames();
     $optionRows = old('options', $product->options->map(fn ($option) => [
         'id' => $option->id,
         'name' => $option->name,

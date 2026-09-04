@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\AppSetting;
 use App\Models\Category;
 use App\Models\City;
 use App\Models\Product;
@@ -154,6 +155,33 @@ class ProductControllerTest extends TestCase
             ->assertSee('Немає в наявності')
             ->assertSee('+ Додати вибір начинки')
             ->assertDontSee('name="options[0][name]"', false);
+    }
+
+    public function test_product_create_form_uses_configured_option_names(): void
+    {
+        AppSetting::setProductOptionNames(['Манго', 'Курка']);
+        Category::create([
+            'name' => 'Роли',
+            'slug' => 'rolls',
+            'sort_order' => 1,
+            'is_active' => true,
+        ]);
+        City::create([
+            'name' => 'Переяслав',
+            'slug' => 'pereiaslav',
+            'phone' => '+380000000001',
+            'is_active' => true,
+        ]);
+
+        $response = $this
+            ->actingAs(User::factory()->create())
+            ->get(route('admin.products.create'));
+
+        $response
+            ->assertOk()
+            ->assertSee('Манго')
+            ->assertSee('Курка')
+            ->assertDontSee('ЛОСОСЬ');
     }
 
     public function test_authenticated_admin_update_keeps_existing_product_slug(): void

@@ -21,6 +21,7 @@ class MenuSettingControllerTest extends TestCase
             ->actingAs(User::factory()->create())
             ->put(route('admin.menu-settings.update'), [
                 'all_category_image' => UploadedFile::fake()->image('all.jpg'),
+                'product_option_names' => AppSetting::DefaultProductOptionNames,
             ]);
 
         $response
@@ -31,5 +32,20 @@ class MenuSettingControllerTest extends TestCase
 
         $this->assertNotNull($image);
         Storage::disk('public')->assertExists($image);
+    }
+
+    public function test_authenticated_admin_can_update_product_option_names(): void
+    {
+        $response = $this
+            ->actingAs(User::factory()->create())
+            ->put(route('admin.menu-settings.update'), [
+                'product_option_names' => ['ЛОСОСЬ', 'Манго', 'Манго', '', 'Курка'],
+            ]);
+
+        $response
+            ->assertRedirect(route('admin.menu-settings.edit'))
+            ->assertSessionHas('success', 'Налаштування меню оновлено.');
+
+        $this->assertSame(['ЛОСОСЬ', 'Манго', 'Курка'], AppSetting::productOptionNames());
     }
 }
