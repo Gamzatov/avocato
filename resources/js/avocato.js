@@ -420,7 +420,7 @@ function addToCart(productId, optionId = null) {
     notify('Цієї позиції зараз немає в наявності.');
     return;
   }
-  hideCheckoutSuccess();
+  hideCheckoutCallout();
   const option = optionId
     ? productOptions(product).find(item => Number(item.id) === Number(optionId))
     : null;
@@ -433,14 +433,14 @@ function addToCart(productId, optionId = null) {
 function changeQty(productId, optionId, delta) {
   const item = cart.find(i => i.productId === productId && (i.optionId || null) === (optionId || null));
   if (!item) return;
-  hideCheckoutSuccess();
+  hideCheckoutCallout();
   item.qty += delta;
   if (item.qty <= 0) cart = cart.filter(i => !(i.productId === productId && (i.optionId || null) === (optionId || null)));
   saveCart(); renderCart();
 }
 
 function removeItem(productId, optionId) {
-  hideCheckoutSuccess();
+  hideCheckoutCallout();
   cart = cart.filter(i => !(i.productId === productId && (i.optionId || null) === (optionId || null)));
   saveCart(); renderCart();
 }
